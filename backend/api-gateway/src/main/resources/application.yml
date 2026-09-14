@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: ${SERVER_PORT:8080}
+
+services:
+  customer:
+    url: ${CUSTOMER_SERVICE_URL:http://localhost:8081}
+  account:
+    url: ${ACCOUNT_SERVICE_URL:http://localhost:8082}
+  transaction:
+    url: ${TRANSACTION_SERVICE_URL:http://localhost:8083}
+  payment:
+    url: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+  notification:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
+
+jwt:
+  secret: ${JWT_SECRET:change-this-portfolio-demo-secret-please-32bytes-min}
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO

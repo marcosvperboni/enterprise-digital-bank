@@ -1,0 +1,46 @@
+<div class="page-header">
+  <h1>Transaction detail</h1>
+  <button mat-button type="button" routerLink="/transactions">
+    <mat-icon>arrow_back</mat-icon>
+    Back to transactions
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else if (transaction(); as transaction) {
+  <mat-card class="table-card">
+    <mat-card-content class="detail-grid">
+      <div class="detail-field">
+        <span class="detail-label">Account ID</span>
+        <span class="detail-value">{{ transaction.accountId }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="detail-label">Type</span>
+        <span class="detail-value">{{ transaction.type }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="detail-label">Amount</span>
+        <span class="detail-value">{{ transaction.amount | number: '1.2-2' }}</span>
+      </div>
+      @if (transaction.destinationAccountId) {
+        <div class="detail-field">
+          <span class="detail-label">Destination account ID</span>
+          <span class="detail-value">{{ transaction.destinationAccountId }}</span>
+        </div>
+      }
+      <div class="detail-field">
+        <span class="detail-label">Status</span>
+        <span class="status-badge">{{ transaction.status }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="detail-label">Date</span>
+        <span class="detail-value">{{ transaction.createdAt | date: 'medium' }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

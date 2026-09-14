@@ -1,0 +1,18 @@
+.form-card {
+  margin-bottom: var(--space-4);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--app-surface-alt);
+  }
+}

@@ -1,0 +1,121 @@
+<div class="page-header">
+  <h1>Accounts</h1>
+  <button mat-flat-button type="button" (click)="showForm() ? cancelForm() : openCreateForm()">
+    <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
+    {{ showForm() ? 'Cancel' : 'New account' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <mat-card class="table-card form-card">
+    <mat-card-content>
+      <form [formGroup]="form" class="form-grid" (ngSubmit)="submit()">
+        <mat-form-field>
+          <mat-label>Customer ID</mat-label>
+          <input matInput formControlName="customerId" />
+          @if (form.controls.customerId.invalid && form.controls.customerId.touched) {
+            <mat-error>Customer ID is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Account number</mat-label>
+          <input matInput formControlName="accountNumber" />
+          @if (form.controls.accountNumber.invalid && form.controls.accountNumber.touched) {
+            <mat-error>Account number is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Account type</mat-label>
+          <mat-select formControlName="accountType">
+            @for (type of accountTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Balance</mat-label>
+          <input matInput type="number" formControlName="balance" />
+          @if (form.controls.balance.invalid && form.controls.balance.touched) {
+            <mat-error>Balance must be zero or greater</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            @for (status of accountStatuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-flat-button type="submit" [disabled]="saving()">
+          {{ editingAccount() ? 'Update' : 'Save' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (loading()) {
+  <div class="loading">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else {
+  <mat-card class="table-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="accounts()">
+        <ng-container matColumnDef="customerId">
+          <th mat-header-cell *matHeaderCellDef>Customer ID</th>
+          <td mat-cell *matCellDef="let account">{{ account.customerId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="accountNumber">
+          <th mat-header-cell *matHeaderCellDef>Account number</th>
+          <td mat-cell *matCellDef="let account">{{ account.accountNumber }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="accountType">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let account">{{ account.accountType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell *matHeaderCellDef>Balance</th>
+          <td mat-cell *matCellDef="let account">{{ account.balance | number: '1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let account">
+            <span class="status-badge">{{ account.status }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let account">
+            <button mat-icon-button type="button" aria-label="Edit" (click)="openEditForm(account)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button type="button" aria-label="Delete" (click)="remove(account)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      @if (accounts().length === 0) {
+        <p class="empty">No accounts yet.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+}
