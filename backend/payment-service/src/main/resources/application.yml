@@ -1,0 +1,15 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  application:
+    name: payment-service
+  r2dbc:
+    url: ${SPRING_R2DBC_URL:r2dbc:postgresql://localhost:5432/payment_db}
+    username: ${SPRING_R2DBC_USERNAME:platform}
+    password: ${SPRING_R2DBC_PASSWORD:platform}
+  sql:
+    init:
+      mode: always
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}

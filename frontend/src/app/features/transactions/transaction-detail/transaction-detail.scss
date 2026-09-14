@@ -1,0 +1,21 @@
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: var(--app-text);
+}

@@ -1,0 +1,112 @@
+<div class="page-header">
+  <h1>Transactions</h1>
+  <button mat-flat-button type="button" (click)="toggleForm()">
+    <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
+    {{ showForm() ? 'Cancel' : 'New transaction' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <mat-card class="table-card form-card">
+    <mat-card-content>
+      <form [formGroup]="form" class="form-grid" (ngSubmit)="submit()">
+        <mat-form-field>
+          <mat-label>Account ID</mat-label>
+          <input matInput formControlName="accountId" />
+          @if (form.controls.accountId.invalid && form.controls.accountId.touched) {
+            <mat-error>Account ID is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            @for (type of transactionTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" />
+          @if (form.controls.amount.invalid && form.controls.amount.touched) {
+            <mat-error>Amount must be greater than zero</mat-error>
+          }
+        </mat-form-field>
+
+        @if (isTransfer()) {
+          <mat-form-field>
+            <mat-label>Destination account ID</mat-label>
+            <input matInput formControlName="destinationAccountId" />
+            @if (form.controls.destinationAccountId.invalid && form.controls.destinationAccountId.touched) {
+              <mat-error>Destination account is required for transfers</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="saving()">Save</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (loading()) {
+  <div class="loading">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else {
+  <mat-card class="table-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="pagedTransactions()">
+        <ng-container matColumnDef="accountId">
+          <th mat-header-cell *matHeaderCellDef>Account ID</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.accountId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.type }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.amount | number: '1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let transaction">
+            <span class="status-badge">{{ transaction.status }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.createdAt | date: 'short' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
+          (click)="viewDetail(row)"
+        ></tr>
+      </table>
+
+      @if (transactions().length === 0) {
+        <p class="empty">No transactions yet.</p>
+      }
+
+      <mat-paginator
+        [length]="transactions().length"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPage($event)"
+      />
+    </mat-card-content>
+  </mat-card>
+}
